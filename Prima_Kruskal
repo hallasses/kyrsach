@@ -1,0 +1,302 @@
+#include <iostream>
+
+#include <algorithm>
+
+#include <vector>
+
+#include <climits>
+
+
+
+using namespace std;
+
+class Edge {
+
+	int spoint; 
+	int	fpoint; 
+	int weight; 
+
+public:
+	void SetSpoint(int spoint) {
+		
+		this->spoint = spoint;
+		
+	}
+
+	int GetSpoint() {
+		
+		return spoint;
+	}
+
+	void SetFpoint(int fpoint) {
+		
+		this->fpoint = fpoint;
+		
+	}
+
+	int GetFpoint() {	
+		
+		return fpoint;
+		
+	}
+
+	void SetWeight(int weight) {
+		
+		this->weight = weight;
+		
+	}
+
+	int GetWeight() {
+		
+		return weight;
+		
+	}
+};
+
+class Prim{
+private:
+	int n;
+  	int *parent;
+ 	int *key;
+  	bool *mstSet;
+public:
+	void Start(int n, int **graph){
+	cout << "\n";
+    for (int i = 0; i < n; i++) {
+		graph[i] = new int[n];
+		for (int j = 0; j < n; j++) {
+			if (i == j){
+				graph[i][j] = 0;
+			}else{
+				cout << "Введите вес ребра " << i << " - " << j << ":" << endl;
+				cin >> graph[i][j];
+			}
+		}
+	}
+		cout << endl;
+	prima(n, graph);
+}
+	void prima(int n, int** graph){
+	int parent[n];
+	int key[n];
+	bool mst[n];
+
+	for (int i = 0; i < n; i++)
+		key[i] = INT_MAX, mst[i] = false;
+
+	key[0] = 0;
+	parent[0] = -1;
+
+
+	for (int count = 0; count < n - 1; count++) {
+
+		int u = minKey(key, mst, n);
+
+		mst[u] = true;
+
+		for (int i = 0; i < n; i++) {
+			if (graph[u][i] && mst[i] == false && graph[u][i] < key[i])
+				parent[i] = u, key[i] = graph[u][i];
+		}
+	}
+	printMST(parent, graph, n);
+
+}
+  int minKey(int key[], bool mstSet[], int n){
+	int min = INT_MAX, min_index;
+
+	for (int i = 0; i < n; i++)
+		if (mstSet[i] == false && key[i] < min)
+			min = key[i], min_index = i;
+	return min_index;
+}
+	void printMST(int* parent, int** graph, int n){
+	cout << "Ребро: \tВес ребра:\n";
+	int summ = 0;
+	for (int i = 1; i < n; i++) {
+		cout << parent[i] << " - " << i << " \t\t" << graph[i][parent[i]] << " \n";
+		summ += graph[i][parent[i]];
+		}
+	cout << "\n Сумма рёбер МОД: " << summ << endl;
+	}
+};
+
+bool compare(Edge e1, Edge e2) {
+	
+	return e1.GetWeight() < e2.GetWeight();
+	
+}
+
+int findParent(int v, int *parent) {
+	
+	if(parent[v] == v) {
+		
+		return v;
+		
+	}
+	
+		return findParent(parent[v], parent);
+	
+}
+
+void kruskals(Edge *inp, int n, int edg) { 
+  
+	sort(inp, inp + edg, compare);
+
+	Edge *output = new Edge[n-1];
+
+	int *parent = new int[n];
+	
+	for (int i = 0; i < n; i++){
+		
+		parent[i] = i;
+		
+	}
+		
+	int count = 0;
+	
+	int i = 0;
+	
+	while(count != n-1) {
+		
+		Edge currentEdge = inp[i];
+
+		int sparent = findParent(currentEdge.GetSpoint(), parent);
+		
+		int fparent = findParent(currentEdge.GetFpoint(), parent);
+
+		if (sparent != fparent) {
+			
+			output[count] = currentEdge;
+			
+			count++;
+			
+			parent[sparent] = fparent;
+			
+		}
+		
+		i++;
+	}
+	for (int i = 0; i < n-1; i++) {
+		
+			if(output[i].GetSpoint() < output[i].GetFpoint()){
+				
+				cout <<	"Первая вершина: "; 
+				
+				cout <<  output[i].GetSpoint();
+				
+				cout << ", ";
+				
+				cout << "Вторая вершина: ";
+				
+				cout << output[i].GetFpoint();
+				
+				cout << ", ";
+				
+				cout << "Вес ребра: ";
+				
+				cout <<	output[i].GetWeight() << endl;
+				
+			}
+			else {
+				cout <<	"Вторая вершина: ";
+				
+				cout <<  output[i].GetFpoint();
+				
+				cout << ", " << "Первая вершина: ";
+				
+				cout << output[i].GetSpoint();
+				
+				cout << ", ";
+				
+				cout << "Вес ребра: "; 
+				
+				cout << output[i].GetWeight() << endl;
+				
+			}	
+		}
+	}
+
+
+int main()
+{
+  int way;
+	
+  cout << "Выберите алгоритм: \n 1 - Алгоритм Прима \n 2 - Алгоритм Краскала  " << endl;
+	
+  cin >> way;
+	
+  int firstWay = 1;
+	
+  int secondWay = 2;
+
+  if(way == firstWay){
+	  
+	cout << "Введите количество вершин:" << endl;  
+	  
+  	int n;
+	  
+  	cin >> n;
+	  
+	int** graph = new int* [n];
+	  
+	Prim prima;
+	  
+	prima.Start(n, graph);
+	  
+  }
+	  
+  	else if(way == secondWay){
+		
+    	int n, edg;
+		
+		cout << "Введите количество вершин" << endl;
+		
+  		cin >> n;
+		
+		cout << "Введите количество рёбер" << endl;
+		
+		cin >> edg;
+		
+		Edge *inp = new Edge[edg]; 
+		
+		int s, f, w;
+		
+		for (int i = 0; i < edg; i++) {
+			
+			cout << "Подграф " << i + 1 << endl << endl;
+			
+			cout << "Введите начальную вершину" << endl;
+			
+			cin >> s;
+			
+			cout << "Введите конечную вершину" << endl;
+			
+			cin >> f;
+			
+			cout << "Введите вес ребра" << endl;	
+			
+			cin >> w;
+			
+			inp[i].SetSpoint(s);
+			
+			inp[i].SetFpoint(f);
+			
+			inp[i].SetWeight(w);
+			
+		}
+		
+	cout << "\n";
+		
+	kruskals(inp, n, edg);
+		
+  }else{
+		
+        cout << "Некорректный ввод";
+		
+    return 0;
+		
+  }
+	
+return 0;
+}
